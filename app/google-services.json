@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "51877631411",
+    "firebase_url": "https://hyper-bar-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "hyper-bar",
+    "storage_bucket": "hyper-bar.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:51877631411:android:8863d067d414f28c5ca7c6",
+        "android_client_info": {
+          "package_name": "com.example.hyperbar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "51877631411-57eutfdqlgif6rg0qggecb0bmt7rhh6u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDDtIE9v2tSEZGDm1Hq0xvAzf3qwKS6MBY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "51877631411-57eutfdqlgif6rg0qggecb0bmt7rhh6u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
