@@ -19,6 +19,7 @@ Kotlin, Jetpack Compose
 
 ## Screenshots
 
+![test image size]<img src="https://i.ibb.co/8Ys6473/Screenshot-20220515-233101-com-example-hyperbar.jpg" width="360" height="770">
 ![App Screenshot](https://i.ibb.co/8Ys6473/Screenshot-20220515-233101-com-example-hyperbar.jpg)
 ![App Screenshot](https://i.ibb.co/1GdDGKq/Screenshot-20220515-233133-com-example-hyperbar.jpg)
 ![App Screenshot](https://i.ibb.co/xMVqGTf/Screenshot-20220515-233218-com-example-hyperbar.jpg)
