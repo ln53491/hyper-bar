@@ -7,7 +7,7 @@ Refreshing app made for users to order drinks at a fictional "Hyper Bar" (curren
 
 ## Highlights
 
-- communication with bartender side of the app via Firebase
+- Firebase used for customer-bartender communication
 - MVVM architecture
 - real-time order functionality
 
