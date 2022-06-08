@@ -1,15 +1,35 @@
 package com.example.hyperbar.data
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.painter.Painter
 import coil.compose.rememberImagePainter
 import com.example.hyperbar.R
+import com.example.hyperbar.screens.BoxState
 import com.example.hyperbar.screens.ToggleButtonOption
 
 var firstTime = false
 var cartBool = true
-
+var waiterFlag = false
+var waiterId = 0
+var waiterFromMain = true
+var waiterProblem = false
+var waiter = false
 var ordered = false
 var orderSuccessful = false
+var triggerOrder = false
+var triggerDoneOuter = false
+var orderType = -1
+
+var stateOfTheBox = BoxState.Collapsed
+
+var selectedSaved = 0
+
+var waiterLogout = false
+
+var sessionOrders = mutableListOf<Long>()
+var sessionOrdersDone = mutableListOf<Long>()
+
+var pastOrderOrders: MutableList<Order> = mutableListOf()
 
 
 var currentProductFirstTimeBool = true

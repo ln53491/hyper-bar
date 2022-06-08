@@ -5,6 +5,7 @@ import android.graphics.drawable.shapes.Shape
 import android.provider.Settings
 import android.widget.ToggleButton
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
@@ -27,6 +28,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -48,10 +50,14 @@ import com.example.hyperbar.ui.theme.ArchivoTypography
 @Composable
 fun SettingsScreen() {
     BackHandler() {
-        Router.navigateTo(Screen.MainScreen)
+        if(waiterFlag == true){
+            Router.navigateTo(Screen.WaiterScreen)
+        }else{
+            fromItemScreen = true
+            waiterFlag = false
+            Router.navigateTo(Screen.MainScreen)
+        }
     }
-    tableBool.updateCameFromIntro(false)
-    fromItemScreen = true
 
     val focusRequester = remember { FocusRequester() }
     val scaffoldState: ScaffoldState = rememberScaffoldState()
@@ -157,10 +163,44 @@ fun SettingsScreen() {
                     color = Color(red = 175, green = 175, blue = 175)
                 )
 
+                if (waiterFlag == true) {
+                    waiterId = 0
+                    Spacer(modifier = Modifier.height(15.dp))
+                    Button(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(40.dp)
+                            .background(Color.Transparent)
+                            .align(Alignment.CenterHorizontally),
+                        onClick = {
+                            waiterFlag = false
+                            Router.navigateTo(Screen.TestScreen)
+                        },
+                        shape = RoundedCornerShape(10.dp),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFFF2222))
+                    ) {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                color = Color.White,
+                                text = "Log Out",
+                                style = ArchivoTypography.body2.copy(
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            )
+                        }
+                    }
+                }
+
                 ExpandableCard(
                     title = "Privacy Policy",
                     description = loremIpsum
                 )
+//                AnimatedContentSize()
             }
         },
         bottomBar = {
@@ -225,7 +265,8 @@ fun ExpandableCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color.Transparent)
-                .padding(15.dp),
+                .padding(15.dp)
+                .animateContentSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Row(
@@ -249,15 +290,66 @@ fun ExpandableCard(
                 Text(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = 15.dp),
+                        .padding(top = 15.dp)
+                        .animateContentSize(),
                     text = description,
                     style = ArchivoTypography.subtitle1,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
         }
     }
 }
+
+@OptIn(ExperimentalAnimationApi::class, androidx.compose.material.ExperimentalMaterialApi::class)
+@Composable
+private fun AnimatedContentSize() {
+    var expanded by remember { mutableStateOf(false) }
+
+    Card(
+        modifier = Modifier
+            .padding(top = 15.dp, bottom = 15.dp)
+            .fillMaxWidth()
+            .defaultMinSize(minHeight = 50.dp),
+        shape = RoundedCornerShape(15.dp),
+        onClick = {
+            expanded = !expanded
+        },
+        elevation = 3.dp
+    ) {
+
+    }
+
+    Box(modifier = Modifier.fillMaxWidth().padding(top = 24.dp)) {
+        Button(
+            modifier = Modifier.align(Alignment.Center).background(Color.White),
+            onClick = { expanded = !expanded }
+        ) {
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = "Privacy",
+                style = ArchivoTypography.h6.copy(fontSize = 16.sp),
+                color = Color.Black,
+                textAlign = TextAlign.Center
+            )
+        }
+    }
+        Text(
+            modifier = Modifier
+                .wrapContentSize()
+                .padding(top = 15.dp)
+                .background(Color.White)
+                .animateContentSize(),
+            text = if(expanded){
+                               loremIpsum
+            } else{
+                  ""
+                  },
+            style = ArchivoTypography.subtitle1,
+            color = Color.Black
+        )
+}
+
 
 enum class SelectionType {
     NONE,
@@ -414,7 +506,13 @@ fun TopBarSettings() {
         ) {
             IconButton(
                 onClick = {
-                    Router.navigateTo(Screen.MainScreen)
+                    if(waiterFlag == true){
+                        Router.navigateTo(Screen.WaiterScreen)
+                    }else{
+                        fromItemScreen = true
+                        waiterFlag = false
+                        Router.navigateTo(Screen.MainScreen)
+                    }
                 }
             ) {
                 Icon(

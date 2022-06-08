@@ -29,8 +29,13 @@ class DataModel(val repository : Repository) : ViewModel() {
     var todaysSelection : Flow<List<TodaysSelection>> = MutableStateFlow(emptyList())
     var products : Flow<List<Product>> = MutableStateFlow(emptyList())
     var orders : Flow<List<Order>> = MutableStateFlow(emptyList())
+    var waiters : Flow<List<Waiter>> = MutableStateFlow(emptyList())
+    var tables : Flow<List<Table>> = MutableStateFlow(emptyList())
+    var keysOrders : Flow<List<String>> = MutableStateFlow(emptyList())
 
     fun addOrder(order: Order) = repository.addOrder(order)
+    fun updateOrderWaiterId(orderKey: String, waiterId: Long) = repository.updateOrderWaiterId(orderKey, waiterId)
+    fun updateOrderDone(orderKey: String) = repository.updateOrderDone(orderKey)
 
     init {
         viewModelScope.launch {
@@ -38,6 +43,9 @@ class DataModel(val repository : Repository) : ViewModel() {
             todaysSelection = repository.getTodaysSelection()
             products = repository.getProducts()
             orders = repository.getOrders()
+            waiters = repository.getWaiters()
+            tables = repository.getTables()
+            keysOrders = repository.getOrdersKeys()
         }
     }
 }

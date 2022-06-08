@@ -25,6 +25,24 @@ class Repository{
         orders.push().setValue(order)
     }
 
+    fun updateOrderWaiterId(orderKey: String, waiterId: Long){
+        if(bool){
+            database.setPersistenceEnabled(true)
+            bool = false
+        }
+        var orders = database.getReference("order")
+        orders.child(orderKey).child("waiterId").setValue(waiterId)
+    }
+
+    fun updateOrderDone(orderKey: String){
+        if(bool){
+            database.setPersistenceEnabled(true)
+            bool = false
+        }
+        var orders = database.getReference("order")
+        orders.child(orderKey).child("done").setValue(1.toLong())
+    }
+
     fun getCategories(): Flow<List<CategoryNew>> = callbackFlow  {
         if(bool){
             database.setPersistenceEnabled(true)
@@ -119,5 +137,79 @@ class Repository{
         var orders = database.getReference("order")
         orders.addValueEventListener(listener)
         awaitClose{ orders.removeEventListener(listener) }
+    }
+
+
+
+    fun getOrdersKeys(): Flow<List<String>> = callbackFlow  {
+        if(bool){
+            database.setPersistenceEnabled(true)
+            bool = false
+        }
+        val listener = object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val items: List<String> = dataSnapshot.children.map { snapshot ->
+                    snapshot.key + "ĐĐĐ" + snapshot.getValue(Order::class.java)!!.orderId
+                }
+                this@callbackFlow.trySend(items).isSuccess
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Failed to read value
+                Log.w(ContentValues.TAG, "Failed to read value.", error.toException())
+            }
+        }
+
+        var orders = database.getReference("order")
+        orders.addValueEventListener(listener)
+        awaitClose{ orders.removeEventListener(listener) }
+    }
+
+    fun getWaiters(): Flow<List<Waiter>> = callbackFlow  {
+        if(bool){
+            database.setPersistenceEnabled(true)
+            bool = false
+        }
+        val listener = object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val items: List<Waiter> = dataSnapshot.children.map { snapshot ->
+                    snapshot.getValue(Waiter::class.java)!!
+                }
+                this@callbackFlow.trySend(items).isSuccess
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Failed to read value
+                Log.w(ContentValues.TAG, "Failed to read value.", error.toException())
+            }
+        }
+
+        var waiters = database.getReference("waiter")
+        waiters.addValueEventListener(listener)
+        awaitClose{ waiters.removeEventListener(listener) }
+    }
+
+    fun getTables(): Flow<List<Table>> = callbackFlow  {
+        if(bool){
+            database.setPersistenceEnabled(true)
+            bool = false
+        }
+        val listener = object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val items: List<Table> = dataSnapshot.children.map { snapshot ->
+                    snapshot.getValue(Table::class.java)!!
+                }
+                this@callbackFlow.trySend(items).isSuccess
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Failed to read value
+                Log.w(ContentValues.TAG, "Failed to read value.", error.toException())
+            }
+        }
+
+        var tables = database.getReference("tables")
+        tables.addValueEventListener(listener)
+        awaitClose{ tables.removeEventListener(listener) }
     }
 }

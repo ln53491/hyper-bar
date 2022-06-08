@@ -11,12 +11,16 @@ sealed class Screen() {
     object SettingsScreen : Screen()
     object CartScreen : Screen()
     object ItemScreen : Screen()
+    object WaiterScreen : Screen()
+    object HistoryScreen : Screen()
+    object PastOrdersScreen : Screen()
 }
 
 object Router {
     var currentScreen: Screen by mutableStateOf(Screen.IntroScreen)
 
     fun navigateTo(destination: Screen) {
+
         currentScreen = destination
     }
 }

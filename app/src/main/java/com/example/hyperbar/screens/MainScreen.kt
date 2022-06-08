@@ -4,14 +4,13 @@ import android.app.Activity
 import android.content.ContentValues.TAG
 import android.content.res.Configuration
 import android.os.Build
+import android.os.Handler
 import android.util.Log
+import android.view.MotionEvent
 import androidx.activity.compose.BackHandler
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.*
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.animateIntOffsetAsState
-import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
@@ -26,9 +25,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.geometry.Offset
@@ -41,6 +42,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Placeable
@@ -241,6 +243,8 @@ fun MainScreenBack(
         }
     }
 
+    var orderTypeLocal by remember {mutableStateOf(orderType)}
+
     val focusRequester = remember { FocusRequester() }
     val scaffoldState: ScaffoldState = rememberScaffoldState()
     Scaffold(
@@ -257,10 +261,17 @@ fun MainScreenBack(
                     .verticalScroll(rememberScrollState())
             ) {
                 var selectedOption by remember {
-                    mutableStateOf(categories.value[0])
+                    mutableStateOf(categories.value[selectedSaved])
                 }
 
                 val onSelectionChange = { text: CategoryNew ->
+                    var sel = 0
+                    for(cat in categories.value){
+                        if(cat == text){
+                            selectedSaved = sel
+                        }
+                        sel++
+                    }
                     selectedOption = text
                 }
 
@@ -350,8 +361,13 @@ fun MainScreenBack(
                                             color = Color.White
                                         )
                                                 if (savedCurrencyState.first == "EUR") {
+                                                    var price = currentImage.priceEur.toString().split(".")[1]
                                                     Text(
-                                                        text = "€" + currentImage.priceEur.toString() + "0",
+                                                        text = if (price.length == 1) {
+                                                            "€" + currentImage.priceEur.toString() + "0"
+                                                        } else {
+                                                            "€" + currentImage.priceEur.toString()
+                                                        },
                                                         style = ArchivoTypography.h5,
                                                         color = Color.White
                                                     )
@@ -562,20 +578,34 @@ fun MainScreenBack(
                             ) {
                                 DropdownMenuItem(onClick = {
                                     orderBool = false
+                                    orderType = 0
+                                    orderTypeLocal = 0
                                 }) {
                                     Text("Price: Low to High")
                                 }
                                 Divider()
                                 DropdownMenuItem(onClick = {
                                     orderBool = false
+                                    orderType = 1
+                                    orderTypeLocal = 1
                                 }) {
                                     Text("Price: High to Low")
                                 }
                                 Divider()
                                 DropdownMenuItem(onClick = {
                                     orderBool = false
+                                    orderType = 2
+                                    orderTypeLocal = 2
                                 }) {
                                     Text("Name")
+                                }
+                                Divider()
+                                DropdownMenuItem(onClick = {
+                                    orderBool = false
+                                    orderType = -1
+                                    orderTypeLocal = -1
+                                }) {
+                                    Text("Default")
                                 }
                             }
                         }
@@ -637,6 +667,18 @@ fun MainScreenBack(
                             productsCategory.add(product)
                         }
                     }
+                    if(orderTypeLocal == 2){
+                        var productsCategory = productsCategory.sortBy { it.name }
+                    }
+                    if(orderTypeLocal == 1){
+                        var productsCategory = productsCategory.sortByDescending { it.priceEur }
+                    }
+                    if(orderTypeLocal == 0){
+                        var productsCategory = productsCategory.sortBy { it.priceEur }
+                    }
+                    if(orderTypeLocal == -1){
+                        var productsCategory = productsCategory.sortBy { it.id }
+                    }
                     if (orientation == "Portrait") {
                         DrinkGrid(productsCategory, 2, images)
                     } else {
@@ -687,6 +729,7 @@ fun DrinkGrid(
 }
 
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun CardDrink(
     item: Product,
@@ -728,50 +771,52 @@ fun CardDrink(
                         }
                         )
                 )
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clickable {
-                            currentItem = item
-                            Router.navigateTo(Screen.ItemScreen)
-                        }
-                        .background(
-                            Brush.verticalGradient(
-                                colors = listOf(Color(0x55000000), Color.Transparent),
-                                endY = 175f
-                            )
-                        ),
-                    contentAlignment = Alignment.TopEnd
-                ) {
-                    IconButton(
-                        onClick = {
-                            if (tableBool.tableNum != 0) {
-                                var count = -1
-                                for (element in cartItems) {
-                                    if (element.item == item) {
-                                        count = cartItems.indexOf(element)
+                if(tableBool.tableNum != 0){
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clickable {
+                                currentItem = item
+                                Router.navigateTo(Screen.ItemScreen)
+                            }
+                            .background(
+                                Brush.verticalGradient(
+                                    colors = listOf(Color(0x55000000), Color.Transparent),
+                                    endY = 175f
+                                )
+                            ),
+                        contentAlignment = Alignment.TopEnd
+                    ) {
+                        IconButton(
+                            onClick = {
+                                if (tableBool.tableNum != 0) {
+                                    var count = -1
+                                    for (element in cartItems) {
+                                        if (element.item == item) {
+                                            count = cartItems.indexOf(element)
+                                        }
                                     }
-                                }
-                                if (count == -1) {
-                                    var newCartItem = CartItem(item, 1)
-                                    cartItems.add(newCartItem)
-                                } else {
-                                    if (cartItems.get(count).quantity < 9) {
-                                        cartItems.get(count).quantity =
-                                            cartItems.get(count).quantity + 1
+                                    if (count == -1) {
+                                        var newCartItem = CartItem(item, 1)
+                                        cartItems.add(newCartItem)
+                                    } else {
+                                        if (cartItems.get(count).quantity < 9) {
+                                            cartItems.get(count).quantity =
+                                                cartItems.get(count).quantity + 1
+                                        }
                                     }
                                 }
                             }
+                        ) {
+                            Icon(
+                                Icons.Filled.AddCircle,
+                                contentDescription = "Add",
+                                modifier = Modifier
+                                    .padding(7.dp)
+                                    .size(35.dp),
+                                tint = Color.White
+                            )
                         }
-                    ) {
-                        Icon(
-                            Icons.Filled.AddCircle,
-                            contentDescription = "Add",
-                            modifier = Modifier
-                                .padding(7.dp)
-                                .size(35.dp),
-                            tint = Color.White
-                        )
                     }
                 }
             }
@@ -790,8 +835,13 @@ fun CardDrink(
                     contentAlignment = Alignment.TopStart
                 ) {
                             if (savedCurrencyState.first == "EUR") {
+                                var price = item.priceEur.toString().split(".")[1]
                                 Text(
-                                    text =  "€" + item.priceEur.toString() + "0",
+                                    text = if (price.length == 1) {
+                                        "€" + item.priceEur.toString() + "0"
+                                    } else {
+                                        "€" + item.priceEur.toString()
+                                    },
                                     style = ArchivoTypography.subtitle1,
                                     color = Color.Black
                                 )
@@ -848,6 +898,8 @@ fun BottomBarMain(
                         null
                     } else {
                         tableBool.update(true)
+                        waiterFromMain = false
+                        waiter = false
                         Router.navigateTo(Screen.TestScreen)
                     }
                 },
@@ -856,7 +908,14 @@ fun BottomBarMain(
             Spacer(modifier = Modifier.width(5.dp))
             if (tableBool.tableNum != 0) {
                 IconButton(
-                    onClick = {}
+                    onClick = {
+                        if(cartItems.size != 0){
+                            triggerDoneOuter = false
+                            stateOfTheBox = BoxState.Expanded
+                            triggerOrder = true
+                        }
+                        Router.navigateTo(Screen.CartScreen)
+                    }
                 ) {
                     Icon(
                         Icons.Filled.CheckCircle,
@@ -879,6 +938,10 @@ fun BottomBarMain(
             IconButton(
                 onClick = {
                     tableBool.update(true)
+                    waiterFromMain = false
+                    waiter = false
+
+                    cartItems.clear()
                     Router.navigateTo(Screen.TestScreen)
                 }
             ) {
@@ -892,10 +955,14 @@ fun BottomBarMain(
             }
             if (tableBool.tableNum != 0) {
                 IconButton(
-                    onClick = {}
+                    onClick = {
+
+                        Router.navigateTo(Screen.PastOrdersScreen)
+
+                    }
                 ) {
                     Icon(
-                        Icons.Filled.Refresh,
+                        Icons.Filled.History,
                         contentDescription = "Refresh",
                         modifier = Modifier
                             .padding(10.dp),

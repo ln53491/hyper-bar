@@ -7,6 +7,16 @@ data class CategoryNew(
     val name: String = ""
 )
 
+data class Waiter(
+    val id: Long = 0,
+    val password: String = "",
+    val username: String = ""
+)
+
+data class Table(
+    val id: Long = 0
+)
+
 data class TodaysSelection(
     val id: Long = 0,
 )
@@ -23,8 +33,6 @@ data class Product(
     val servingSize: Double = 0.0
 )
 
-
-
 data class Order(
     val done: Long = 0,
     val orderId: Long = 0,
@@ -34,4 +42,10 @@ data class Order(
     val totalPriceInEUR: Double = 0.0,
     val totalPriceInKN: Long = 0,
     val waiterId: Long = 0
+)
+
+
+data class OrderKeys(
+    val key: String = "",
+    val order: Order,
 )
