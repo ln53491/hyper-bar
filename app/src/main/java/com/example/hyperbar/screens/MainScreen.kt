@@ -1,6 +1,7 @@
 package com.example.hyperbar.screens
 
 import android.app.Activity
+import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.content.res.Configuration
 import android.os.Build
@@ -84,7 +85,8 @@ fun MainScreen(
     todaysSelection: State<List<TodaysSelection>>,
     products: State<List<Product>>,
     orders: State<List<Order>>,
-    images: Map<Long, AsyncImagePainter>
+    images: Map<Long, AsyncImagePainter>,
+    viewModel: DataModel
 ) {
     val activity = (LocalContext.current as? Activity)
     BackHandler() {
@@ -108,7 +110,8 @@ fun MainScreen(
             todaysSelection,
             products,
             orders,
-            images
+            images,
+            viewModel
         )
         if (tableBool.cameFromIntro || ordered == true) {
             AnimatedVisibility(
@@ -210,14 +213,23 @@ fun MainScreenBack(
     todaysSelection: State<List<TodaysSelection>>,
     products: State<List<Product>>,
     orders: State<List<Order>>,
-    images: Map<Long, AsyncImagePainter>
+    images: Map<Long, AsyncImagePainter>,
+    viewModel: DataModel
 ) {
+//    val categories: State<List<CategoryNew>> =
+//        viewModel.categories.collectAsState(initial = emptyList())
+//    val todaysSelection: State<List<TodaysSelection>> =
+//        viewModel.todaysSelection.collectAsState(initial = emptyList())
+//    val products: State<List<Product>> =
+//        viewModel.products.collectAsState(initial = emptyList())
+//    val orders: State<List<Order>> = viewModel.orders.collectAsState(initial = emptyList())
+
     val configuration = LocalConfiguration.current
     val orientation by remember {
         mutableStateOf(
             when (configuration.orientation) {
                 Configuration.ORIENTATION_LANDSCAPE -> {
-                    "Landscape"
+                    Router.navigateTo(Screen.MainScreen)
                 }
                 else -> {
                     "Portrait"
@@ -260,6 +272,7 @@ fun MainScreenBack(
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
             ) {
+                Log.d(ContentValues.TAG, categories.value.toString())
                 var selectedOption by remember {
                     mutableStateOf(categories.value[selectedSaved])
                 }
@@ -283,6 +296,12 @@ fun MainScreenBack(
                 var currentImage by remember { mutableStateOf(
                     currentProduct
                 ) }
+
+                var configuration = LocalConfiguration.current
+
+                var screenHeight by remember{mutableStateOf(configuration.screenHeightDp)}
+                var screenWidth by remember{mutableStateOf(configuration.screenWidthDp)}
+
                 if (orientation == "Portrait") {
                     Box(
                         modifier = Modifier

@@ -96,7 +96,8 @@ class MainActivity : ComponentActivity() {
                         todaysSelection,
                         products,
                         orders,
-                        images
+                        images,
+                        viewModel
                     )
                     Screen.SettingsScreen -> SettingsScreen()
                     Screen.CartScreen -> CartScreen(orders, viewModel)

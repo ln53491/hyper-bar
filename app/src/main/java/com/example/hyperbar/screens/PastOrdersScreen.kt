@@ -184,6 +184,35 @@ fun OrderCardCustomer(
                             Color(red = 255, green = 140, blue = 0)
                         }
                     )
+
+                    if (savedCurrencyState.first == "EUR") {
+                        var price = order.totalPriceInEUR.toString().split(".")[1]
+                        Text(
+                            text = if (price.length == 1) {
+                                "€" + order.totalPriceInEUR.toString() + "0"
+                            } else {
+                                "€" + order.totalPriceInEUR.toString()
+                            },
+                            style = ArchivoTypography.h1,
+                            color =
+                            if(order.done.toInt() == 1){
+                                Color(red = 175, green = 175, blue = 175)
+                            } else{
+                                Color(red = 255, green = 140, blue = 0)
+                            }
+                        )
+                    } else {
+                        Text(
+                            text = order.totalPriceInKN.toString() + " kn",
+                            style = ArchivoTypography.h1,
+                            color =
+                            if(order.done.toInt() == 1){
+                                Color(red = 175, green = 175, blue = 175)
+                            } else{
+                                Color(red = 255, green = 140, blue = 0)
+                            }
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(5.dp))

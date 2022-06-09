@@ -7,6 +7,17 @@ import com.example.hyperbar.R
 import com.example.hyperbar.screens.BoxState
 import com.example.hyperbar.screens.ToggleButtonOption
 
+fun rotation(
+    height: Int,
+    width: Int
+): String{
+    if(height > width){
+        return "Portrait"
+    } else {
+        return "Landscape"
+    }
+}
+
 var firstTime = false
 var cartBool = true
 var waiterFlag = false
