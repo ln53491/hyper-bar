@@ -1,7 +1,7 @@
 
 # Hyper Bar ordering app
 
-Refreshing app made for users to order drinks at a fictional "Hyper Bar" (currently being worked on)
+Refreshing app made for users to order drinks at a fictional "Hyper Bar"
 
 
 
